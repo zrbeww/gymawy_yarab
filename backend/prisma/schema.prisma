@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  email     String   @unique
+  password  String
+  provider  String   @default("credentials")
+  workouts  Workout[]
+  favorites Exercise[] @relation("Favorites", references: [id])
+  role      Role      @default(USER)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Exercise {
+  id           String    @id @default(cuid())
+  name         String
+  description  String
+  muscleGroup  String
+  equipment    String
+  difficulty   String
+  videoUrl     String?
+  approved     Boolean   @default(true)
+  createdById  String?
+  createdBy    User?     @relation(fields: [createdById], references: [id])
+  favorites    User[]    @relation("Favorites")
+  workoutItems WorkoutItem[]
+}
+
+model Workout {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  date            DateTime     @default(now())
+  durationMinutes Int
+  items           WorkoutItem[]
+}
+
+model WorkoutItem {
+  id         String   @id @default(cuid())
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id])
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  sets       Int
+  reps       Int
+  weightKg   Float
+}
+
+

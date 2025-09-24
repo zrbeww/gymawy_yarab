@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: gymawy-backend
+    env: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: PORT
+        value: 4000
+      - key: APP_ORIGIN
+        sync: false
+databases:
+  - name: gymawy-db
+    plan: free
+
+
